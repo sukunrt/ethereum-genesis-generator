@@ -72,7 +72,10 @@ generate_genesis() {
     [ $has_fork -lt 6 ] && [ ! "$FULU_FORK_EPOCH"      == "18446744073709551615" ] && genesis_add_fulu $tmp_dir
                            [ ! "$FULU_FORK_EPOCH"      == "18446744073709551615" ] && genesis_add_bpos $tmp_dir 1 $max_bpos
     [ $has_fork -lt 7 ] && [ ! "$GLOAS_FORK_EPOCH"     == "18446744073709551615" ] && genesis_add_gloas $tmp_dir
-    [ $has_fork -lt 8 ] && [ ! "$HEZE_FORK_EPOCH"      == "18446744073709551615" ] && genesis_add_heze $tmp_dir
+    # HEZE is CL-only in this fork: no bogota entries in the EL genesis. A
+    # scheduled bogotaTime makes geth demand the next engine-API version at
+    # Heze's timestamp and reject Prysm's fcus with -38005 "Unsupported fork".
+    [ $has_fork -lt 8 ] && [ ! "$HEZE_FORK_EPOCH"      == "18446744073709551615" ] && echo "HEZE is CL-only in this image: no bogota in the EL genesis"
 
     if [ "$is_shadowfork" == "0" ]; then
         # Initialize allocations with precompiles
