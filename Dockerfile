@@ -43,6 +43,16 @@ COPY --from=builder /work/eth-beacon-genesis/bin/eth-genesis-state-generator /us
 COPY --from=builder /go/bin/eth2-val-tools /usr/local/bin/eth2-val-tools
 COPY --from=builder /go/bin/geth-hdwallet /usr/local/bin/geth-hdwallet
 
+# The CL genesis state: prysmctl, not eth-genesis-state-generator. See
+# apps/prysm-genesis-state.sh for the why. Installing it under the upstream
+# name leaves the stock entrypoint untouched. prysmctl itself is NOT in this
+# image: the downstream image COPYs in a matching decoupled-fork build.
+COPY --chmod=755 apps/prysm-genesis-state.sh /usr/local/bin/prysm-genesis-state.sh
+RUN mv /usr/local/bin/eth-genesis-state-generator \
+       /usr/local/bin/eth-genesis-state-generator.upstream \
+    && ln -s /usr/local/bin/prysm-genesis-state.sh \
+             /usr/local/bin/eth-genesis-state-generator
+
 COPY config-example /config
 COPY defaults /defaults
 COPY entrypoint.sh .
