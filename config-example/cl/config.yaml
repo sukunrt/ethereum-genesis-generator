@@ -65,6 +65,14 @@ HEZE_FORK_EPOCH: $HEZE_FORK_EPOCH
 # Time parameters
 # ---------------------------------------------------------------
 # 12000 milliseconds
+# Rounds per epoch = SLOTS_PER_EPOCH / SLOTS_PER_ROUND. The committee
+# shuffle repeats every round: the attestation-traffic multiplier.
+SLOTS_PER_ROUND: $SLOTS_PER_ROUND
+# How far into the slot an available attestation is due, in basis
+# points. The head-timing sweep axis.
+AVAILABLE_ATTESTATION_DUE_BPS_HEZE: $AVAILABLE_ATTESTATION_DUE_BPS_HEZE
+# ~3000-validator committees at every scale; small runs floor to one per slot.
+TARGET_COMMITTEE_SIZE: $TARGET_COMMITTEE_SIZE
 SLOT_DURATION_MS: $SLOT_DURATION_MS
 # 14 (estimate from Eth1 mainnet)
 SECONDS_PER_ETH1_BLOCK: $SECONDS_PER_ETH1_BLOCK
@@ -170,10 +178,12 @@ ATTESTATION_PROPAGATION_SLOT_RANGE: 32
 MAXIMUM_GOSSIP_CLOCK_DISPARITY: 500
 MESSAGE_DOMAIN_INVALID_SNAPPY: 0x00000000
 MESSAGE_DOMAIN_VALID_SNAPPY: 0x01000000
-# 2 subnets per node
-SUBNETS_PER_NODE: 2
-# 2**6 (= 64) subnets
-ATTESTATION_SUBNET_COUNT: 64
+# Subnet count must equal the committee count per slot
+# (validators / SLOTS_PER_ROUND / TARGET_COMMITTEE_SIZE, min 1): one
+# committee -> one subnet -> every node observes every raw FFG vote
+# instead of a 1/64 sample. Never hardcode either value.
+SUBNETS_PER_NODE: $SUBNETS_PER_NODE
+ATTESTATION_SUBNET_COUNT: $ATTESTATION_SUBNET_COUNT
 # 0 bits
 ATTESTATION_SUBNET_EXTRA_BITS: 0
 
