@@ -1,3 +1,20 @@
+# prysmctl from the decoupled Prysm fork: it generates the Heze CL genesis
+# state (see apps/prysm-genesis-state.sh) and must match that tree's
+# consensus types exactly. Statically linked so the runtime stage's glibc
+# does not matter. For local iteration against an unpushed Prysm tree, build
+# this image and COPY a locally built prysmctl over /usr/local/bin/prysmctl.
+FROM golang:1.26 AS prysmctl-builder
+WORKDIR /work
+ARG PRYSM_REPO=https://github.com/sukunrt/prysm.git
+ARG PRYSM_BRANCH=decoupled-casper
+ARG PRYSM_SHA=0280403c70d88967f49d2d4c730f4c5417dabdf5
+RUN git clone -q --branch ${PRYSM_BRANCH} --single-branch ${PRYSM_REPO} prysm \
+    && cd prysm \
+    && git checkout -q ${PRYSM_SHA} \
+    && CGO_ENABLED=1 go build -tags osusergo,netgo \
+        -ldflags '-linkmode external -extldflags "-static"' \
+        -o /usr/local/bin/prysmctl ./cmd/prysmctl
+
 FROM golang:1.26 AS builder
 WORKDIR /work
 ARG ETH_BEACON_GENESIS_VERSION=v0.0.7
@@ -45,8 +62,8 @@ COPY --from=builder /go/bin/geth-hdwallet /usr/local/bin/geth-hdwallet
 
 # The CL genesis state: prysmctl, not eth-genesis-state-generator. See
 # apps/prysm-genesis-state.sh for the why. Installing it under the upstream
-# name leaves the stock entrypoint untouched. prysmctl itself is NOT in this
-# image: the downstream image COPYs in a matching decoupled-fork build.
+# name leaves the stock entrypoint untouched.
+COPY --from=prysmctl-builder /usr/local/bin/prysmctl /usr/local/bin/prysmctl
 COPY --chmod=755 apps/prysm-genesis-state.sh /usr/local/bin/prysm-genesis-state.sh
 RUN mv /usr/local/bin/eth-genesis-state-generator \
        /usr/local/bin/eth-genesis-state-generator.upstream \
