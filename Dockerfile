@@ -7,10 +7,11 @@ FROM golang:1.26 AS prysmctl-builder
 WORKDIR /work
 ARG PRYSM_REPO=https://github.com/sukunrt/prysm.git
 ARG PRYSM_BRANCH=decoupled-casper
-ARG PRYSM_SHA=0280403c70d88967f49d2d4c730f4c5417dabdf5
-RUN git clone -q --branch ${PRYSM_BRANCH} --single-branch ${PRYSM_REPO} prysm \
+# The ADD tracks the branch tip, so the clone layer's cache busts on push
+# (a bare RUN git clone would stay cached at whatever tip it first saw).
+ADD https://api.github.com/repos/sukunrt/prysm/git/refs/heads/${PRYSM_BRANCH} /tmp/prysm-ref.json
+RUN git clone -q --depth 1 --branch ${PRYSM_BRANCH} ${PRYSM_REPO} prysm \
     && cd prysm \
-    && git checkout -q ${PRYSM_SHA} \
     && CGO_ENABLED=1 go build -tags osusergo,netgo \
         -ldflags '-linkmode external -extldflags "-static"' \
         -o /usr/local/bin/prysmctl ./cmd/prysmctl

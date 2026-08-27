@@ -13,8 +13,8 @@
 # fields the entrypoint reads back out of it.
 #
 # CONTRACT: /usr/local/bin/prysmctl must be built from the matching
-# decoupled-fork Prysm tree. The Dockerfile builds it from the pinned
-# PRYSM_SHA; a downstream image may COPY a locally built one over it.
+# decoupled-fork Prysm tree. The Dockerfile builds it from the tip of
+# PRYSM_BRANCH; a downstream image may COPY a locally built one over it.
 #
 # The validator keystores come from eth2-val-tools over the mnemonic, so the
 # genesis registry has to hold exactly those pubkeys in that order; we feed
