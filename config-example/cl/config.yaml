@@ -71,6 +71,10 @@ SLOTS_PER_ROUND: $SLOTS_PER_ROUND
 # How far into the slot an available attestation is due, in basis
 # points. The head-timing sweep axis.
 AVAILABLE_ATTESTATION_DUE_BPS_HEZE: $AVAILABLE_ATTESTATION_DUE_BPS_HEZE
+# Random bytes added to each gossiped block and each available attestation.
+# The message-size sweep axes.
+CONSENSUS_BLOCK_SCRATCH_SPACE: $CONSENSUS_BLOCK_SCRATCH_SPACE
+GOLDFISH_SCRATCH_SPACE: $GOLDFISH_SCRATCH_SPACE
 # ~3000-validator committees at every scale; small runs floor to one per slot.
 TARGET_COMMITTEE_SIZE: $TARGET_COMMITTEE_SIZE
 SLOT_DURATION_MS: $SLOT_DURATION_MS
