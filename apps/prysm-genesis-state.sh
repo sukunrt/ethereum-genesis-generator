@@ -121,6 +121,8 @@ state_json="${ssz%.ssz}-state.json"
     --genesis-time-delay "${GENESIS_DELAY:-0}" \
     --output-ssz "$ssz" \
     --output-json "$state_json"
+# prysmctl writes 0600. A client that runs as another user must read the state.
+chmod 0644 "$ssz" "$state_json"
 
 # A wrong credential prefix produces NUMBER_OF_VALIDATORS+BUILDER_COUNT
 # validators and an empty builder registry with no error anywhere, so this is a
